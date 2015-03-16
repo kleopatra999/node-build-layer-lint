@@ -1,0 +1,20 @@
+{
+  "name": "build-layer-lint",
+  "version": "0.0.0",
+  "description": "Check that modules specified in a rjs build.json actually exist",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^2.1.1",
+    "mocha": "^2.2.1",
+    "mock-fs": "^2.5.0"
+  },
+  "dependencies": {
+    "extend": "^2.0.0",
+    "requirejs-config-file": "^2.0.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "modules": [{
+    "name": "foo"
+  }, {
+    "name": "bar"
+  }]
+}

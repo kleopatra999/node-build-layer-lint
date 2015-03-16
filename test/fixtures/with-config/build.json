@@ -1,0 +1,8 @@
+{
+  "mainConfigFile": "config.js",
+  "modules": [{
+    "name": "foo"
+  }, {
+    "name": "bar"
+  }]
+}
