@@ -64,8 +64,8 @@ describe('buildLayerLint', function() {
     it('returns an empty array', function() {
       mockFs({
         'build.json': fs.readFileSync(path.join(fixturePath, 'simple/build.json')),
-        'foo': 'foo',
-        'bar': 'bar'
+        'foo.js': 'foo',
+        'bar.js': 'bar'
       });
 
       expect(buildLayerLint('build.json')).to.deep.equal([]);
@@ -76,7 +76,7 @@ describe('buildLayerLint', function() {
     it('returns an array of the undefined module names', function() {
       mockFs({
         'build.json': fs.readFileSync(path.join(fixturePath, 'simple/build.json')),
-        'foo': 'foo',
+        'foo.js': 'foo',
       });
 
       expect(buildLayerLint('build.json')).to.deep.equal(['bar']);
@@ -88,8 +88,8 @@ describe('buildLayerLint', function() {
       mockFs({
         'build.json': fs.readFileSync(path.join(fixturePath, 'with-config/build.json')),
         'config.js': fs.readFileSync(path.join(fixturePath, 'with-config/config.js')),
-        'vendor/foo': 'foo',
-        'bar': 'bar'
+        'vendor/foo.js': 'foo',
+        'bar.js': 'bar'
       });
 
       expect(buildLayerLint('build.json')).to.deep.equal([]);
@@ -101,8 +101,8 @@ describe('buildLayerLint', function() {
       mockFs({
         'build.json': fs.readFileSync(path.join(fixturePath, 'with-config/build.json')),
         'config.js': fs.readFileSync(path.join(fixturePath, 'with-config/config.js')),
-        'forks/vendor/foo': 'foo',
-        'forks/bar': 'bar'
+        'forks/vendor/foo.js': 'foo',
+        'forks/bar.js': 'bar'
       });
 
       expect(buildLayerLint('build.json', 'forks')).to.deep.equal([]);

@@ -44,7 +44,9 @@ function resolveModuleName(config, moduleName) {
 }
 
 function checkModuleExists(resolvedModuleName) {
-  try { fs.statSync(resolvedModuleName); }
+  var fileName = !!~resolvedModuleName.indexOf('.js') ? resolvedModuleName : resolvedModuleName + '.js';
+
+  try { fs.statSync(fileName); }
   catch(e) { return false; }
 
   return true;
