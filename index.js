@@ -18,9 +18,19 @@ module.exports = function(configPath, modulesRoot) {
   var buildConfig = readBuildConfig(configPath);
   var requireConfig = readRequireConfig(buildConfig);
   var config = extend({}, requireConfig, buildConfig);
+  var moduleNames = config.modules.reduce(function(names, module) {
+    names.push(module.name);
 
-  return config.modules.reduce(function(undefinedModules, module) {
-    var name = module.name;
+    if (module.include) {
+      names = module.include.concat(names);
+    }
+
+    return names;
+  }, []);
+
+//  console.warn(names);
+
+  return moduleNames.reduce(function(undefinedModules, name) {
     var resolvedName = path.join(modulesRoot, resolveModuleName(config, name));
 
     if (!checkModuleExists(resolvedName)) {
