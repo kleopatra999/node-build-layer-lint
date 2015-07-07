@@ -28,8 +28,6 @@ module.exports = function(configPath, modulesRoot) {
     return names;
   }, []);
 
-//  console.warn(names);
-
   return moduleNames.reduce(function(undefinedModules, name) {
     var resolvedName = path.join(modulesRoot, resolveModuleName(config, name));
 
