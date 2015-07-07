@@ -108,4 +108,47 @@ describe('buildLayerLint', function() {
       expect(buildLayerLint('build.json', 'forks')).to.deep.equal([]);
     });
   });
+
+  describe('given a build.js with includes', function() {
+    it('reads it when it exists', function() {
+      mockFs({
+        'build.json': fs.readFileSync(path.join(fixturePath, 'with-include/build.json'))
+      });
+
+      expect(function() {
+        buildLayerLint('build.json');
+      }).to.not.throw(Error);
+    });
+
+    it('throws an error when it does not exist', function() {
+      mockFs();
+
+      expect(function() {
+        buildLayerLint('build.json');
+      }).to.throw(/no such file or directory/);
+    });
+  });
+
+  describe('given a build.json with includes where all includes are not defined', function() {
+    it('returns an array of undefined module names and includes', function() {
+      mockFs({
+        'build.json': fs.readFileSync(path.join(fixturePath, 'with-include/build.json')),
+      });
+
+      expect(buildLayerLint('build.json')).to.deep.equal(['fooMod', 'foo', 'bar', 'common']);
+    });
+  });
+
+  describe('given a build.json with includes where all includes are defined', function() {
+    it('returns an empty array', function() {
+      mockFs({
+        'build.json': fs.readFileSync(path.join(fixturePath, 'simple/build.json')),
+        'foo.js': 'foo',
+        'bar.js': 'bar',
+        'fooBar.js': 'fooBar'
+      });
+
+      expect(buildLayerLint('build.json')).to.deep.equal([]);
+    });
+  });
 });

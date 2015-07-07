@@ -1,0 +1,12 @@
+{
+  "modules": [{
+    "name": "foo"
+  }, {
+    "name": "bar"
+  }, {
+    "name": "common",
+    "include": [
+      "fooMod"
+    ]
+  }]
+}
