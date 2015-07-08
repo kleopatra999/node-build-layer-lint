@@ -1,0 +1,9 @@
+{
+  "modules": [{
+    "name": "foo",
+    "exclude": [
+      "jquery",
+      "common"
+    ]
+  }]
+}

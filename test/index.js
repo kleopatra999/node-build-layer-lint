@@ -164,4 +164,31 @@ describe('buildLayerLint', function() {
       });
     });
   });
+
+  describe('given a build.js with excludes', function() {
+
+    describe('where all excludes are not defined', function() {
+      it('returns an array of undefined excludes', function() {
+        mockFs({
+          'build.json': fs.readFileSync(path.join(fixturePath, 'with-exclude/build.json')),
+          'foo.js': 'foo'
+        });
+
+        expect(buildLayerLint('build.json')).to.deep.equal(['jquery', 'common']);
+      });
+    });
+
+    describe('where all excludes are defined', function() {
+      it('returns an empty array', function() {
+        mockFs({
+          'build.json': fs.readFileSync(path.join(fixturePath, 'with-exclude/build.json')),
+          'foo.js': 'foo',
+          'jquery.js': 'jquery',
+          'common.js': 'common'
+        });
+
+        expect(buildLayerLint('build.json')).to.deep.equal([]);
+      });
+    });
+  });
 });

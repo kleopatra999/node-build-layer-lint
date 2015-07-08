@@ -23,9 +23,10 @@ module.exports = function(configPath, modulesRoot) {
     names.push(module.name);
 
     if (module.include) {
-      names = names.concat(module.include.filter(function(name) {
-        return names.indexOf(name) === -1;
-      }));
+      names = arrayUnion(names, module.include);
+    }
+    if (module.exclude) {
+      names = arrayUnion(names, module.exclude);
     }
 
     return names;
@@ -41,6 +42,12 @@ module.exports = function(configPath, modulesRoot) {
     return undefinedModules;
   }, []);
 };
+
+function arrayUnion(arrA, arrB) {
+  return arrA.concat(arrB.filter(function(item) {
+    return arrA.indexOf(item) === -1;
+  }));
+}
 
 function resolveModuleName(config, requireConfig, moduleName) {
   var splitPath = moduleName.split(path.sep);
