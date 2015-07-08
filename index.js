@@ -16,24 +16,25 @@ module.exports = function(configPath, modulesRoot) {
   modulesRoot = modulesRoot || '.';
 
   var buildConfig = readBuildConfig(configPath);
-  var requireConfig = readRequireConfig(buildConfig);
-  var reqConfig = extend({}, requireConfig);
-  var config = extend({}, requireConfig, buildConfig);
+  var requireConfig = readRequireConfig(buildConfig) || {};
+  var config = extend({}, requireConfig, {modules: buildConfig.modules});
   var moduleNames = config.modules.reduce(function(names, module) {
     names.push(module.name);
 
     if (module.include) {
-      names = arrayUnion(names, module.include);
+      names = names.concat(module.include);
     }
     if (module.exclude) {
-      names = arrayUnion(names, module.exclude);
+      names = names.concat(module.exclude);
     }
 
     return names;
   }, []);
 
+  moduleNames = deDuplicate(moduleNames);
+
   return moduleNames.reduce(function(undefinedModules, name) {
-    var resolvedName = path.join(modulesRoot, resolveModuleName(config, reqConfig, name));
+    var resolvedName = path.join(modulesRoot, resolveModuleName(config, name));
 
     if (!checkModuleExists(resolvedName)) {
       undefinedModules.push(name);
@@ -43,14 +44,16 @@ module.exports = function(configPath, modulesRoot) {
   }, []);
 };
 
-function arrayUnion(arrA, arrB) {
-  return arrA.concat(arrB.filter(function(item) {
-    return arrA.indexOf(item) === -1;
-  }));
+function deDuplicate(list) {
+  var obj = list.reduce(function(set, item) {
+    set[item] = null;
+    return set;
+  }, {});
+  return Object.keys(obj);
 }
 
-function resolveModuleName(config, requireConfig, moduleName) {
-  var splitPath = moduleName.split(path.sep);
+function resolveModuleName(config, moduleName) {
+  var splitPath = moduleName.split('/');
   var pathRoot = splitPath[0];
 
   if (config.map && config.map['*'] && config.map['*'][moduleName]) {
@@ -59,9 +62,9 @@ function resolveModuleName(config, requireConfig, moduleName) {
 
   // only the path root can be a lookup, as lookups are either relative to
   // a baseUrl, or to /
-  if (requireConfig.paths && requireConfig.paths.hasOwnProperty(pathRoot)) {
-    splitPath[0] = requireConfig.paths[pathRoot];
-    moduleName = splitPath.join(path.sep);
+  if (config.paths && config.paths.hasOwnProperty(pathRoot)) {
+    splitPath[0] = config.paths[pathRoot];
+    moduleName = splitPath.join('/');
   }
 
   return moduleName;
