@@ -94,6 +94,18 @@ describe('buildLayerLint', function() {
 
       expect(buildLayerLint('build.json')).to.deep.equal([]);
     });
+
+    describe('where paths are relative to a path lookup', function() {
+      it('returns an array of undefined module names', function() {
+        mockFs({
+          'build.json': fs.readFileSync(path.join(fixturePath, 'with-slash-path/build.json')),
+          'config.js': fs.readFileSync(path.join(fixturePath, 'with-slash-path/config.js')),
+          'vendor/foo/bar.js': 'foo',
+        });
+
+        expect(buildLayerLint('build.json')).to.deep.equal(['foo/foo']);
+      });
+    });
   });
 
   describe('given a module root', function() {
@@ -127,28 +139,29 @@ describe('buildLayerLint', function() {
         buildLayerLint('build.json');
       }).to.throw(/no such file or directory/);
     });
-  });
 
-  describe('given a build.json with includes where all includes are not defined', function() {
-    it('returns an array of undefined module names and includes', function() {
-      mockFs({
-        'build.json': fs.readFileSync(path.join(fixturePath, 'with-include/build.json')),
+    describe('where all includes are not defined', function() {
+      it('returns an array of undefined module names and includes', function() {
+        mockFs({
+          'build.json': fs.readFileSync(path.join(fixturePath, 'with-include/build.json')),
+        });
+
+        expect(buildLayerLint('build.json')).to.deep.equal(['foo', 'bar', 'common', 'fooMod']);
       });
-
-      expect(buildLayerLint('build.json')).to.deep.equal(['fooMod', 'foo', 'bar', 'common']);
     });
-  });
 
-  describe('given a build.json with includes where all includes are defined', function() {
-    it('returns an empty array', function() {
-      mockFs({
-        'build.json': fs.readFileSync(path.join(fixturePath, 'simple/build.json')),
-        'foo.js': 'foo',
-        'bar.js': 'bar',
-        'fooBar.js': 'fooBar'
+    describe('where all includes are defined', function() {
+      it('returns an empty array', function() {
+        mockFs({
+          'build.json': fs.readFileSync(path.join(fixturePath, 'with-include/build.json')),
+          'foo.js': 'foo',
+          'bar.js': 'bar',
+          'common.js': 'common',
+          'fooMod.js': 'fooMod'
+        });
+
+        expect(buildLayerLint('build.json')).to.deep.equal([]);
       });
-
-      expect(buildLayerLint('build.json')).to.deep.equal([]);
     });
   });
 });

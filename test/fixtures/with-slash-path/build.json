@@ -1,0 +1,6 @@
+{
+  "modules": [{
+    "name": "foo/bar",
+    "name": "foo/foo"
+  }]
+}
