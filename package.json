@@ -1,6 +1,6 @@
 {
   "name": "build-layer-lint",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Check that modules specified in a rjs build.json actually exist",
   "main": "index.js",
   "scripts": {
