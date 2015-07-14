@@ -16,11 +16,24 @@ module.exports = function(configPath, modulesRoot) {
   modulesRoot = modulesRoot || '.';
 
   var buildConfig = readBuildConfig(configPath);
-  var requireConfig = readRequireConfig(buildConfig);
-  var config = extend({}, requireConfig, buildConfig);
+  var requireConfig = readRequireConfig(buildConfig) || {};
+  var config = extend({}, requireConfig, {modules: buildConfig.modules});
+  var moduleNames = config.modules.reduce(function(names, module) {
+    names.push(module.name);
 
-  return config.modules.reduce(function(undefinedModules, module) {
-    var name = module.name;
+    if (module.include) {
+      names = names.concat(module.include);
+    }
+    if (module.exclude) {
+      names = names.concat(module.exclude);
+    }
+
+    return names;
+  }, []);
+
+  moduleNames = deDuplicate(moduleNames);
+
+  return moduleNames.reduce(function(undefinedModules, name) {
     var resolvedName = path.join(modulesRoot, resolveModuleName(config, name));
 
     if (!checkModuleExists(resolvedName)) {
@@ -31,13 +44,27 @@ module.exports = function(configPath, modulesRoot) {
   }, []);
 };
 
+function deDuplicate(list) {
+  var obj = list.reduce(function(set, item) {
+    set[item] = null;
+    return set;
+  }, {});
+  return Object.keys(obj);
+}
+
 function resolveModuleName(config, moduleName) {
+  var splitPath = moduleName.split('/');
+  var pathRoot = splitPath[0];
+
   if (config.map && config.map['*'] && config.map['*'][moduleName]) {
     return config.map['*'][moduleName];
   }
 
-  if (config.paths && config.paths[moduleName]) {
-    return config.paths[moduleName];
+  // only the path root can be a lookup, as lookups are either relative to
+  // a baseUrl, or to /
+  if (config.paths && config.paths.hasOwnProperty(pathRoot)) {
+    splitPath[0] = config.paths[pathRoot];
+    moduleName = splitPath.join('/');
   }
 
   return moduleName;
